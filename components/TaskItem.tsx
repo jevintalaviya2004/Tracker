@@ -57,9 +57,15 @@ function Details({ text }: { text: string }) {
   return <div className="details-text">{blocks}</div>;
 }
 
+function linkKind(url: string) {
+  if (/youtube\.com|youtu\.be/.test(url)) return "video";
+  if (/kaggle\.com\/learn|developers\.google\.com/.test(url)) return "course";
+  return "doc";
+}
+
 export default function TaskItem({ title, xp, done, details, links, onToggle, disabled, status, defaultOpen }: Props) {
   const [open, setOpen] = useState(!!defaultOpen);
-  const hasMore = !!details || links.length > 0;
+  const hasSteps = !!details;
 
   return (
     <div className={`task ${done ? "done" : ""} ${status ?? ""} ${open ? "open" : ""}`}>
@@ -81,29 +87,31 @@ export default function TaskItem({ title, xp, done, details, links, onToggle, di
         )}
         <button
           className="task-main"
-          onClick={() => hasMore && setOpen(!open)}
-          aria-expanded={hasMore ? open : undefined}
-          disabled={!hasMore}
+          onClick={() => hasSteps && setOpen(!open)}
+          aria-expanded={hasSteps ? open : undefined}
+          disabled={!hasSteps}
         >
           <span className="task-title">{title}</span>
-          {hasMore && <span className="task-more">{open ? "Hide steps" : "Show steps"}</span>}
+          {hasSteps && <span className="task-more">{open ? "Hide steps ▴" : "What to do ▾"}</span>}
         </button>
         <span className="xp">+{xp}</span>
       </div>
-      {open && hasMore && (
+
+      {links.length > 0 && (
+        <ul className="links" aria-label="Resources">
+          {links.map((l) => (
+            <li key={l.url}>
+              <a href={l.url} target="_blank" rel="noopener noreferrer" className={`link-${linkKind(l.url)}`}>
+                {l.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {open && hasSteps && (
         <div className="task-details">
-          {details && <Details text={details} />}
-          {links.length > 0 && (
-            <ul className="links">
-              {links.map((l) => (
-                <li key={l.url}>
-                  <a href={l.url} target="_blank" rel="noopener noreferrer">
-                    {l.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          )}
+          <Details text={details!} />
         </div>
       )}
     </div>
