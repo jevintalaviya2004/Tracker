@@ -34,8 +34,10 @@ export function levelFromXp(totalXp: number): LevelInfo {
 
 /** Was this task on the schedule for `day`? Respects when it was created and archived. */
 export function isScheduledOn(task: Task, day: string): boolean {
-  if (isoToDay(task.created_at) > day) return false;
   if (task.archived_at && isoToDay(task.archived_at) <= day) return false;
+  // One-off plan task: only on its own date
+  if (task.day) return task.day === day;
+  if (isoToDay(task.created_at) > day) return false;
   return task.weekdays.includes(weekdayOf(day));
 }
 
@@ -73,8 +75,21 @@ export function computeState({ tasks, completions, bonuses, milestones, today }:
   // ---- today ---------------------------------------------------------------
   const todaysDone = doneByDay.get(today) ?? new Set<string>();
   const todayTasks = scheduledOn(tasks, today)
-    .sort((a, b) => a.sort_order - b.sort_order || a.created_at.localeCompare(b.created_at))
-    .map((t) => ({ id: t.id, title: t.title, xp: t.xp, done: todaysDone.has(t.id) }));
+    .sort(
+      (a, b) =>
+        (a.day ? 0 : 1) - (b.day ? 0 : 1) ||
+        a.sort_order - b.sort_order ||
+        a.created_at.localeCompare(b.created_at),
+    )
+    .map((t) => ({
+      id: t.id,
+      title: t.title,
+      xp: t.xp,
+      done: todaysDone.has(t.id),
+      details: t.details ?? null,
+      links: Array.isArray(t.links) ? t.links : [],
+      planned: !!t.day,
+    }));
   const dayComplete = todayTasks.length > 0 && todayTasks.every((t) => t.done);
   if (dayComplete) bonusDays.add(today);
 

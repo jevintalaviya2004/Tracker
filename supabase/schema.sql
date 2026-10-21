@@ -13,8 +13,19 @@ create table if not exists public.tasks (
   weekdays    smallint[] not null default '{1,2,3,4,5}',
   sort_order  integer not null default 0,
   created_at  timestamptz not null default now(),
-  archived_at timestamptz
+  archived_at timestamptz,
+  -- One-off plan tasks: shown only on this date (weekdays is ignored)
+  day         date,
+  details     text,
+  links       jsonb not null default '[]'::jsonb,
+  plan_key    text unique
 );
+-- For databases created before the plan feature existed
+alter table public.tasks add column if not exists day date;
+alter table public.tasks add column if not exists details text;
+alter table public.tasks add column if not exists links jsonb not null default '[]'::jsonb;
+alter table public.tasks add column if not exists plan_key text unique;
+create index if not exists tasks_day_idx on public.tasks(day);
 
 -- One row per task per day it was ticked off
 create table if not exists public.completions (

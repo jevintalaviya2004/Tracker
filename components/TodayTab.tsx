@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { AppState } from "@/lib/types";
 import ProgressRing from "./ProgressRing";
 import ReminderSwitch from "./ReminderSwitch";
+import TaskItem from "./TaskItem";
 import type { Toast } from "./App";
 
 type Props = { state: AppState; apply: (s: AppState) => void; toast: (t: Toast) => void };
@@ -101,23 +102,20 @@ export default function TodayTab({ state, apply, toast }: Props) {
       <section className="panel">
         <h2>Today&apos;s missions</h2>
         {total === 0 ? (
-          <p className="muted">Nothing scheduled today. Your streak is safe — add missions in the Missions tab.</p>
+          <p className="muted">Nothing scheduled today. Your streak is safe. Check the Plan tab to see what's coming.</p>
         ) : (
           <ul className="tasklist">
             {tasks.map((t) => (
               <li key={t.id}>
-                <button
-                  className={`task ${t.done ? "done" : ""}`}
-                  onClick={() => toggle(t.id, t.done)}
+                <TaskItem
+                  title={t.title}
+                  xp={t.xp}
+                  done={t.done}
+                  details={t.details}
+                  links={t.links}
+                  onToggle={() => toggle(t.id, t.done)}
                   disabled={pending !== null && pending !== t.id}
-                  aria-pressed={t.done}
-                >
-                  <span className="check" aria-hidden>
-                    {t.done ? "✓" : ""}
-                  </span>
-                  <span className="task-title">{t.title}</span>
-                  <span className="xp">+{t.xp}</span>
-                </button>
+                />
               </li>
             ))}
           </ul>

@@ -308,7 +308,6 @@ button:disabled {
   flex-direction: column;
   gap: 8px;
 }
-.task,
 .milestone {
   width: 100%;
   display: flex;
@@ -322,7 +321,6 @@ button:disabled {
   min-height: 56px;
   transition: background 0.15s ease, border-color 0.15s ease;
 }
-.task:disabled,
 .milestone:disabled {
   opacity: 0.7;
 }
@@ -332,16 +330,28 @@ button:disabled {
   height: 26px;
   border-radius: 8px;
   border: 2px solid var(--muted);
+  background: transparent;
   display: grid;
   place-items: center;
   font-weight: 800;
   font-size: 0.95rem;
   color: #08261b;
+  padding: 0;
   transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+button.check {
+  /* bigger tap target without a bigger box */
+  box-shadow: 0 0 0 9px transparent;
+}
+.check.static {
+  border-style: dashed;
+  color: var(--muted);
 }
 .done .check {
   background: var(--mint);
   border-color: var(--mint);
+  border-style: solid;
+  color: #08261b;
   transform: scale(1.05);
 }
 .task-title {
@@ -353,7 +363,6 @@ button:disabled {
   text-decoration: line-through;
   text-decoration-color: rgba(163, 168, 209, 0.5);
 }
-.task.done,
 .milestone.done {
   background: var(--mint-soft);
   border-color: rgba(94, 224, 181, 0.25);
@@ -371,6 +380,125 @@ button:disabled {
 .done .xp {
   color: var(--mint);
   background: transparent;
+}
+
+/* task card with expandable steps */
+.task {
+  background: var(--panel-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.task.done {
+  background: var(--mint-soft);
+  border-color: rgba(94, 224, 181, 0.25);
+}
+.task.missed {
+  opacity: 0.7;
+}
+.task.open {
+  border-color: var(--line);
+}
+.task-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  min-height: 56px;
+}
+.task-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  background: none;
+  border: 0;
+  padding: 0;
+  text-align: left;
+}
+.task-main:disabled {
+  cursor: default;
+}
+.task-main .task-title {
+  width: 100%;
+}
+.task-more {
+  font-size: 0.8rem;
+  color: var(--gold);
+}
+.task-details {
+  padding: 0 14px 14px 52px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 0.93rem;
+}
+.details-text {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 68ch;
+}
+.steps {
+  margin: 0;
+  padding-left: 1.1em;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.done-when {
+  color: var(--mint);
+}
+.done-when strong {
+  font-weight: 700;
+}
+.links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.links a {
+  display: inline-block;
+  color: var(--ink);
+  background: var(--bg-deep);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.88rem;
+  word-break: break-word;
+}
+.links a::before {
+  content: "▶ ";
+  color: var(--gold);
+  font-size: 0.75em;
+}
+.links a:hover {
+  border-color: var(--gold);
+}
+
+/* plan tab */
+.weeknav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.weeknav-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: var(--font-display), sans-serif;
+  font-weight: 700;
+}
+.day-card.is-today {
+  border-color: var(--gold);
 }
 
 /* ---------- reminder ---------- */

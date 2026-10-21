@@ -5,12 +5,14 @@ import type { AppState } from "@/lib/types";
 import TodayTab from "./TodayTab";
 import MissionControlTab from "./MissionControlTab";
 import MissionsTab from "./MissionsTab";
+import PlanTab from "./PlanTab";
 
-type Tab = "today" | "control" | "missions";
+type Tab = "today" | "plan" | "control" | "missions";
 
 const TABS: { id: Tab; label: string; icon: string }[] = [
   { id: "today", label: "Today", icon: "◎" },
-  { id: "control", label: "Mission control", icon: "◆" },
+  { id: "plan", label: "Plan", icon: "▦" },
+  { id: "control", label: "Control", icon: "◆" },
   { id: "missions", label: "Missions", icon: "☰" },
 ];
 
@@ -109,6 +111,7 @@ export default function App() {
         )}
         {!state && !error && <div className="loading">Loading missions…</div>}
         {state && tab === "today" && <TodayTab state={state} apply={apply} toast={showToast} />}
+        {state && tab === "plan" && <PlanTab apply={apply} toast={showToast} />}
         {state && tab === "control" && <MissionControlTab state={state} apply={apply} toast={showToast} />}
         {state && tab === "missions" && <MissionsTab reload={load} toast={showToast} />}
       </main>

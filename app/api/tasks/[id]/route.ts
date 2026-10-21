@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/supabase";
-import { HttpError, resyncTodayBonus } from "@/lib/data";
+import { HttpError, resyncTodayBonus, TASK_COLUMNS } from "@/lib/data";
 import { handle, parseTitle, parseWeekdays, parseXp, readJson } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
@@ -21,7 +21,7 @@ export const PATCH = handle(async (req: Request, { params }: Ctx) => {
     .from("tasks")
     .update(update)
     .eq("id", params.id)
-    .select("id,title,xp,weekdays,sort_order,created_at,archived_at")
+    .select(TASK_COLUMNS)
     .maybeSingle();
   if (error) throw new Error(error.message);
   if (!data) throw new HttpError(404, "Task not found");

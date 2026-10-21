@@ -22,6 +22,14 @@ Personal daily mission log for the Werkstudent goal (October 2027). Tick off mis
 - A day with nothing scheduled doesn't break the streak, and an unfinished today never breaks it.
 - "Today" is computed in Europe/Berlin (change it with `APP_TIMEZONE`).
 
+## 60-day plan
+
+`supabase/plan.sql` loads a dated plan from 22 Oct to 20 Dec 2026: 137 tasks, each with written steps, a "Done when" check and verified video or course links. It runs at about 45 min on weekdays and about 2 h on weekends, covering ML foundations, a predictive-maintenance MLOps project, German practice and applications.
+
+- Dated tasks have a `day` and only show up on that date, on the Today tab and in the Plan tab.
+- Repeating missions (weekday-based) are managed in the Missions tab.
+- The file is safe to re-run. It updates tasks by `plan_key` and keeps your ticks.
+
 ## Project layout
 
 ```
@@ -34,15 +42,17 @@ app/
     state                  everything the UI needs (GET)
     toggle                 tick / untick a mission for today
     tasks, tasks/[id]      add, edit, archive, restore missions
+    plan                   all dated plan tasks with done status
     milestones/[id]        toggle a roadmap milestone
     push/subscribe, test   reminder switch and test push
     cron/reminder          daily cron (18:00 UTC), protected by CRON_SECRET
-components/                Today, Mission control, Missions tabs
+components/                Today, Plan, Mission control, Missions tabs
 lib/                       game rules, data access, auth, push
 middleware.ts              blocks everything unless signed in
 public/sw.js               service worker for push
 supabase/schema.sql        tables + roadmap milestones
 supabase/seed.sql          optional 5 starter missions
+supabase/plan.sql          the 60-day plan (run after schema.sql)
 vercel.json                cron schedule
 ```
 

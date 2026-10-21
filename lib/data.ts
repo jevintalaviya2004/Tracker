@@ -2,7 +2,9 @@ import "server-only";
 import { db } from "./supabase";
 import { todayStr } from "./dates";
 import { computeState, DAY_BONUS_XP, scheduledOn } from "./game";
-import type { AppState, Completion, DayBonus, Milestone, Task } from "./types";
+import type { AppState, Completion, DayBonus, Milestone, PlanResponse, Task } from "./types";
+
+export const TASK_COLUMNS = "id,title,xp,weekdays,sort_order,created_at,archived_at,day,details,links";
 
 function check<T>(res: { data: T | null; error: { message: string } | null }, what: string): T {
   if (res.error) throw new Error(`Database error (${what}): ${res.error.message}`);
@@ -27,7 +29,7 @@ async function fetchAll<T>(table: string, columns: string, order: string): Promi
 }
 
 export async function getAllTasks(): Promise<Task[]> {
-  return fetchAll<Task>("tasks", "id,title,xp,weekdays,sort_order,created_at,archived_at", "created_at");
+  return fetchAll<Task>("tasks", TASK_COLUMNS, "created_at");
 }
 
 export async function getState(): Promise<AppState> {
@@ -38,6 +40,28 @@ export async function getState(): Promise<AppState> {
     fetchAll<Milestone>("milestones", "id,phase,phase_title,title,sort_order,done_at", "sort_order"),
   ]);
   return computeState({ tasks, completions, bonuses, milestones, today: todayStr() });
+}
+
+/** All dated plan tasks with their done status, for the Plan tab. */
+export async function getPlan(): Promise<PlanResponse> {
+  const [tasks, completions] = await Promise.all([
+    getAllTasks(),
+    fetchAll<Completion>("completions", "task_id,day,xp", "day"),
+  ]);
+  const done = new Set(completions.map((c) => `${c.task_id}|${c.day}`));
+  const items = tasks
+    .filter((t) => t.day && !t.archived_at)
+    .sort((a, b) => a.day!.localeCompare(b.day!) || a.sort_order - b.sort_order)
+    .map((t) => ({
+      id: t.id,
+      day: t.day!,
+      title: t.title,
+      xp: t.xp,
+      details: t.details ?? null,
+      links: Array.isArray(t.links) ? t.links : [],
+      done: done.has(`${t.id}|${t.day}`),
+    }));
+  return { today: todayStr(), items };
 }
 
 /** Ticks or unticks a task for today and keeps the +20 day bonus in sync. */

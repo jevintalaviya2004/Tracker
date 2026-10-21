@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/supabase";
-import { getAllTasks, resyncTodayBonus } from "@/lib/data";
+import { getAllTasks, resyncTodayBonus, TASK_COLUMNS } from "@/lib/data";
 import { handle, parseTitle, parseWeekdays, parseXp, readJson } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
@@ -23,7 +23,7 @@ export const POST = handle(async (req: Request) => {
   const { data, error } = await db()
     .from("tasks")
     .insert({ title, xp, weekdays, sort_order })
-    .select("id,title,xp,weekdays,sort_order,created_at,archived_at")
+    .select(TASK_COLUMNS)
     .single();
   if (error) throw new Error(error.message);
 

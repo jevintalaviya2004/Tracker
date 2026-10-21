@@ -155,8 +155,10 @@ export default function MissionsTab({ reload, toast }: Props) {
     }
   }
 
-  const active = (tasks ?? []).filter((t) => !t.archived_at);
-  const archived = (tasks ?? []).filter((t) => t.archived_at);
+  // Dated plan tasks live in the Plan tab; this tab manages the repeating missions.
+  const recurring = (tasks ?? []).filter((t) => !t.day);
+  const active = recurring.filter((t) => !t.archived_at);
+  const archived = recurring.filter((t) => t.archived_at);
 
   return (
     <div className="stack">
@@ -167,11 +169,11 @@ export default function MissionsTab({ reload, toast }: Props) {
 
       <section className="panel">
         <div className="panel-head">
-          <h2>Active missions</h2>
+          <h2>Repeating missions</h2>
           <span className="muted small">{active.length}</span>
         </div>
         {tasks === null && <p className="muted">Loading…</p>}
-        {tasks !== null && active.length === 0 && <p className="muted">No missions yet. Add your first one above.</p>}
+        {tasks !== null && active.length === 0 && <p className="muted">No repeating missions. Your dated plan tasks are in the Plan tab.</p>}
         <ul className="missionlist">
           {active.map((t) =>
             editing === t.id ? (

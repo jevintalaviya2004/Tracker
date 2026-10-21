@@ -1,3 +1,5 @@
+export type TaskLink = { label: string; url: string };
+
 export type Task = {
   id: string;
   title: string;
@@ -6,6 +8,10 @@ export type Task = {
   sort_order: number;
   created_at: string;
   archived_at: string | null;
+  /** Set for one-off plan tasks: only scheduled on this date (YYYY-MM-DD) */
+  day: string | null;
+  details: string | null;
+  links: TaskLink[] | null;
 };
 
 export type Completion = {
@@ -39,6 +45,24 @@ export type TodayTask = {
   title: string;
   xp: number;
   done: boolean;
+  details: string | null;
+  links: TaskLink[];
+  planned: boolean;
+};
+
+export type PlanItem = {
+  id: string;
+  day: string;
+  title: string;
+  xp: number;
+  details: string | null;
+  links: TaskLink[];
+  done: boolean;
+};
+
+export type PlanResponse = {
+  today: string;
+  items: PlanItem[];
 };
 
 export type HeatCell = {
